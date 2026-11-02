@@ -57,6 +57,9 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
   final TextEditingController _fatherNameController = TextEditingController(
     text: 'Tariq Ali',
   );
+  final TextEditingController _classController = TextEditingController(
+    text: '9-A',
+  );
   final TextEditingController _feeMonthController = TextEditingController(
     text: 'October 2026',
   );
@@ -85,6 +88,7 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
     _headerController.addListener(_onFieldChanged);
     _studentNameController.addListener(_onFieldChanged);
     _fatherNameController.addListener(_onFieldChanged);
+    _classController.addListener(_onFieldChanged);
     _feeMonthController.addListener(_onFieldChanged);
     _totalFeeController.addListener(_onFieldChanged);
     _totalPaidController.addListener(_onFieldChanged);
@@ -100,6 +104,7 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
     _headerController.dispose();
     _studentNameController.dispose();
     _fatherNameController.dispose();
+    _classController.dispose();
     _feeMonthController.dispose();
     _totalFeeController.dispose();
     _totalPaidController.dispose();
@@ -150,10 +155,10 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
     const pageFormat = PdfPageFormat(
       thermalWidth,
       double.infinity, // Roll continuous height
-      marginLeft: 4 * PdfPageFormat.mm,
-      marginRight: 4 * PdfPageFormat.mm,
-      marginTop: 4 * PdfPageFormat.mm,
-      marginBottom: 6 * PdfPageFormat.mm,
+      marginLeft: 2 * PdfPageFormat.mm,
+      marginRight: 2 * PdfPageFormat.mm,
+      marginTop: 2 * PdfPageFormat.mm,
+      marginBottom: 3 * PdfPageFormat.mm,
     );
 
     pw.MemoryImage? logoImage;
@@ -197,11 +202,11 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                 _selectedTemplate == 0
                     ? '*** OFFICIAL FEE RECEIPT ***'
                     : '*** NOTICE & ANNOUNCEMENT ***',
-                style: const pw.TextStyle(fontSize: 8),
+                style: const pw.TextStyle(fontSize: 7.5),
               ),
-              pw.SizedBox(height: 4),
+              pw.SizedBox(height: 3),
               _buildPdfDashedDivider(),
-              pw.SizedBox(height: 4),
+              pw.SizedBox(height: 3),
 
               // Receipt Meta
               pw.Row(
@@ -217,9 +222,9 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                   ),
                 ],
               ),
-              pw.SizedBox(height: 4),
+              pw.SizedBox(height: 3),
               _buildPdfDashedDivider(),
-              pw.SizedBox(height: 6),
+              pw.SizedBox(height: 4),
 
               // Template 0 Content
               if (_selectedTemplate == 0) ...[
@@ -228,10 +233,11 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                   _studentNameController.text,
                 ),
                 _buildPdfReceiptRow('Father Name:', _fatherNameController.text),
+                _buildPdfReceiptRow('Class:', _classController.text),
                 _buildPdfReceiptRow('Fee Month:', _feeMonthController.text),
-                pw.SizedBox(height: 4),
+                pw.SizedBox(height: 3),
                 _buildPdfDashedDivider(),
-                pw.SizedBox(height: 4),
+                pw.SizedBox(height: 3),
                 _buildPdfReceiptRow(
                   'Total Fee:',
                   'Rs. ${currencyFormat.format(_totalFee)}',
@@ -275,17 +281,17 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                     ],
                   ),
                 ),
-                pw.SizedBox(height: 12),
+                pw.SizedBox(height: 8),
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
                     pw.Text(
                       'Cashier Sig: __________',
-                      style: const pw.TextStyle(fontSize: 7.5),
+                      style: const pw.TextStyle(fontSize: 7),
                     ),
                     pw.Text(
                       'Parent Sig: __________',
-                      style: const pw.TextStyle(fontSize: 7.5),
+                      style: const pw.TextStyle(fontSize: 7),
                     ),
                   ],
                 ),
@@ -335,14 +341,22 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
 
   pw.Widget _buildPdfReceiptRow(String label, String value) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 1.5),
+      padding: const pw.EdgeInsets.symmetric(vertical: 1.1),
       child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text(label, style: const pw.TextStyle(fontSize: 8)),
-          pw.Text(
-            value,
-            style: pw.TextStyle(fontSize: 8.5, fontWeight: pw.FontWeight.bold),
+          pw.SizedBox(
+            width: 42,
+            child: pw.Text(label, style: const pw.TextStyle(fontSize: 7.5)),
+          ),
+          pw.Expanded(
+            child: pw.Text(
+              value,
+              textAlign: pw.TextAlign.right,
+              style: pw.TextStyle(
+                fontSize: 7.8,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -534,6 +548,15 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: _classController,
+                        decoration: const InputDecoration(
+                          labelText: 'Class',
+                          prefixIcon: Icon(Icons.class_outlined),
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                       const SizedBox(height: 14),
                       TextField(
@@ -834,14 +857,18 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                   : _fatherNameController.text,
             ),
             _buildUiKeyValue(
+              'Class',
+              _classController.text.isEmpty ? '---' : _classController.text,
+            ),
+            _buildUiKeyValue(
               'Fee Month',
               _feeMonthController.text.isEmpty
                   ? '---'
                   : _feeMonthController.text,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             _buildDashedLine(),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             _buildUiKeyValue(
               'Total Fee',
               'Rs. ${currencyFormat.format(_totalFee)}',
@@ -884,7 +911,7 @@ class _ReceiptHomeScreenState extends State<ReceiptHomeScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 10),
             const Row(
               children: [
                 Expanded(
